@@ -7,12 +7,17 @@ from scipy.special import binom
 from numpy.linalg import norm
 from scipy.integrate import quad
 
+# binomial coefficients, looked up instead of calling scipy's binom() every time
+# (same values; the curves here are 5th order, so n <= 5)
+_BINOM = [[float(binom(n,nu)) for nu in range(n+1)] for n in range(11)]
+
 def Brn(t,nu,n):
 	# Bernstein basis polynomials
 	if nu < 0 or nu > n:
 		return 0
 	else:
-		return binom(n,nu)*((1-t)**(n-nu))*(t**nu)
+		c = _BINOM[n][nu] if n < 11 else binom(n,nu)
+		return c*((1-t)**(n-nu))*(t**nu)
 
 def d_Brn(t,nu,n):
 	return n*(Brn(t,nu-1,n-1) - Brn(t,nu,n-1))

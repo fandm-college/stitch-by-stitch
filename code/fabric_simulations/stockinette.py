@@ -21,6 +21,7 @@ import numpy as np
 import Bezier as bez
 import CrossOver as co
 import ConnectingCurve as cc
+import fast_contact
 from mathHelper import *
 from scipy.optimize import fmin_cg, minimize
 from numpy.linalg import norm
@@ -643,6 +644,13 @@ while sweep_flag:
 		sTot = curve_arclength[-1]
 		s_excl = 2.1*rad
 
+
+		# fast path (numpy); the loop below is kept for writing the contact files
+		if not print_to_file:
+			return fast_contact.contact_energy_sum(curve_points_mid, curve_points_mid_dt, dt_array,
+				curve_arclength_mid, sTot, tr_c, tr_w, rad, s_excl,
+				(contact_rigidity, contact_exponent, yarn_radius, core_radius),
+				range(-3,4), range(-1,2), None)
 
 		for idx1 in range(0,len(curve_points_mid)):
 			pt1 = curve_points_mid[idx1]
