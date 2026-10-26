@@ -791,6 +791,10 @@ while sweep_flag:
 
 
 	# CONSTRAINED MINIMIZATION OCCURS HERE
+	# NOTE: opts is NOT passed to minimize() below, so SLSQP runs with scipy's
+	# defaults (ftol=1e-6, eps=1.49e-8, maxiter=100), and *ftol in the config has
+	# no effect. All results so far were produced that way. Passing options=opts
+	# would change results (ftol 1e-5, eps 1.49e-9), so don't do it without re-validating.
 	opts = {'maxiter' : None,    # default value None
 			'disp' : False,    # non-default value.
 			'ftol' : ftol,    
@@ -803,6 +807,12 @@ while sweep_flag:
 	
 		res = minimize(f, x0, constraints=cons,method='SLSQP') #method='SLSQP'
 		xres = res['x']
+		# record whether the optimiser converged (no effect on the result)
+		conv_msg = "%s, status %d, %d iterations, %d energy evaluations: %s" % (
+			"converged" if res.success else "NOT CONVERGED", res.status, res.nit, res.nfev, res.message)
+		print(("" if res.success else "WARNING: ") + "SLSQP " + conv_msg, flush=True)
+		with open(out_subdir + "/ConvergenceOut.dat", "w") as ConvergenceOut:
+			ConvergenceOut.write(conv_msg + "\n")
 		print(xres)
 
 		ts_list = t_to_s_list(xres)
@@ -826,6 +836,12 @@ while sweep_flag:
 
 		res = minimize(f, x0, constraints=cons,method='SLSQP') #method='SLSQP'
 		xres = res['x']
+		# record whether the optimiser converged (no effect on the result)
+		conv_msg = "%s, status %d, %d iterations, %d energy evaluations: %s" % (
+			"converged" if res.success else "NOT CONVERGED", res.status, res.nit, res.nfev, res.message)
+		print(("" if res.success else "WARNING: ") + "SLSQP " + conv_msg, flush=True)
+		with open(out_subdir + "/ConvergenceOut.dat", "w") as ConvergenceOut:
+			ConvergenceOut.write(conv_msg + "\n")
 		#xres = x0
 		print(xres)
 
